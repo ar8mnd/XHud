@@ -3,9 +3,11 @@ package xhud;
 import cn.nukkit.Player;
 import cn.nukkit.plugin.PluginBase;
 import cn.nukkit.utils.Config;
+//import cn.nukkit.network.protocol.SetDisplayObjectivePacket;
+//import cn.nukkit.network.protocol.SetScorePacket;
+//import cn.nukkit.network.protocol.types.ScorePacketEntry;
 
 public class Main extends PluginBase {
-
 	public static Config config;
 
 	public void onEnable() {
@@ -14,18 +16,17 @@ public class Main extends PluginBase {
 		getServer().getScheduler().scheduleDelayedRepeatingTask(new Hud(this), 10, 10);
 	}
 
-	public static String getFName(Player player) {
-		try {
-			Class.forName("com.massivecraft.factions.P");
-			return com.massivecraft.factions.P.p.getPlayerFactionTag(player);
-		} catch (Exception e) {
-			return "null";
-		}
-	}
+//	public static String getFName(Player player) {
+//		try {
+//			Class.forName("com.massivecraft.factions.P");
+//			return com.massivecraft.factions.P.p.getPlayerFactionTag(player);
+//		} catch (Exception e) {
+//			return "null";
+//		}
+//	}
 }
 
 class Hud extends Thread {
-
 	private Main plugin;
 
 	public Hud(Main plugin) {
@@ -55,7 +56,7 @@ class Hud extends Thread {
 				money = "null";
 			}
 
-			player.sendPopup(hud.replaceAll("<MONEY>", money).replaceAll("<FNAME>", Main.getFName(player)));
+			player.sendPopup(hud.replaceAll("<MONEY>", money));
 		}
 	}
 }
