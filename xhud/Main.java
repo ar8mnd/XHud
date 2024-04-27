@@ -1,11 +1,18 @@
 package xhud;
 
 import cn.nukkit.Player;
+import cn.nukkit.network.protocol.SetDisplayObjectivePacket;
+import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.scoreboard.IScoreboardLine;
+import cn.nukkit.scoreboard.Scoreboard;
+import cn.nukkit.scoreboard.ScoreboardLine;
+import cn.nukkit.scoreboard.data.DisplaySlot;
+import cn.nukkit.scoreboard.data.SortOrder;
+import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
+import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.utils.Config;
-//import cn.nukkit.network.protocol.SetDisplayObjectivePacket;
-//import cn.nukkit.network.protocol.SetScorePacket;
-//import cn.nukkit.network.protocol.types.ScorePacketEntry;
+import me.onebone.economyapi.EconomyAPI;
 
 public class Main extends PluginBase {
 	public static Config config;
@@ -15,15 +22,6 @@ public class Main extends PluginBase {
 		config = getConfig();
 		getServer().getScheduler().scheduleDelayedRepeatingTask(new Hud(this), 10, 10);
 	}
-
-//	public static String getFName(Player player) {
-//		try {
-//			Class.forName("com.massivecraft.factions.P");
-//			return com.massivecraft.factions.P.p.getPlayerFactionTag(player);
-//		} catch (Exception e) {
-//			return "null";
-//		}
-//	}
 }
 
 class Hud extends Thread {
@@ -51,12 +49,32 @@ class Hud extends Thread {
 
 			try {
 				Class.forName("me.onebone.economyapi.EconomyAPI");
-				money = Double.toString(me.onebone.economyapi.EconomyAPI.getInstance().myMoney(player));
+				money = Double.toString(EconomyAPI.getInstance().myMoney(player));
 			} catch (Exception e) {
 				money = "null";
 			}
 
-			player.sendPopup(hud.replaceAll("<MONEY>", money));
+			hud = hud.replaceAll("<MONEY>", money);
+
+			Scoreboard scoreboard = new Scoreboard("objectiveName", "SideBar", "dummy", SortOrder.ASCENDING);
+
+			scoreboard.addViewer(player, DisplaySlot.SIDEBAR);
+
+			FakeScorer scorer = new FakeScorer("Player1");
+			IScoreboardLine line = new ScoreboardLine(scoreboard, scorer, plugin.getServer().getOnlinePlayers().size());
+			scoreboard.addLine(line);
+
+			line.setScore(plugin.getServer().getOnlinePlayers().size());
+			scoreboard.updateScore(line);
+
+			SetDisplayObjectivePacket objectivePacket = new SetDisplayObjectivePacket();
+			objectivePacket.displaySlot = DisplaySlot.SIDEBAR;
+			objectivePacket.objectiveName = "objectiveName";
+			objectivePacket.displayName = "ABOBA";
+			objectivePacket.criteriaName = "dummy";
+			objectivePacket.sortOrder = SortOrder.ASCENDING;
+
+			player.dataPacket(objectivePacket);
 		}
 	}
 }

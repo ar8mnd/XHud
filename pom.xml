@@ -52,7 +52,7 @@
             <name>Opencollab Repository snapshots</name>
             <url>https://repo.opencollab.dev/maven-snapshots</url>
         </repository>
-    </repositories>f
+    </repositories>
 
      <dependencies>
          <dependency>
