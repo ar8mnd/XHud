@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="a4314a93-e81e-4cdd-8a54-edcda1dfdcb3" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/config.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/EconomyAPI.jar" beforeDir="false" afterPath="$PROJECT_DIR$/lib/EconomyAPI.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/xhud/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/xhud/Main.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

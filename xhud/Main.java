@@ -2,11 +2,14 @@ package xhud;
 
 import cn.nukkit.Player;
 import cn.nukkit.plugin.PluginBase;
+import cn.nukkit.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.Scoreboard;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
 import cn.nukkit.utils.Config;
-import me.onebone.economyapi.EconomyAPI;
+//import angga7togk.economyapi.EconomyAPI;
+import angga7togk.economyapi.database.EconomyDB;
+import cn.nukkit.scoreboard.scorer.IScorer;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,12 +49,13 @@ class Hud extends Thread {
 					.replaceAll("<PING>", Integer.toString(player.getPing()))
 					.replaceAll("<TPS>", Float.toString(plugin.getServer().getTicksPerSecond()));
 			try {
-				Class.forName("me.onebone.economyapi.EconomyAPI");
-				money = Double.toString(EconomyAPI.getInstance().myMoney(player));
+				Class.forName("angga7togk.economyapi.database.EconomyDB");
+				money = Double.toString(EconomyDB.myMoney(player));
 			} catch (Exception e) {
-				money = "null";
+				money = "сколько?";
 			}
 
+			text = text.replaceAll("<MONEY>", money);
 			StringTokenizer tokenizer = new StringTokenizer(text, "*");
 
 			int tokenCount = tokenizer.countTokens();
@@ -61,7 +65,7 @@ class Hud extends Thread {
 				stringArray[i] = tokenizer.nextToken();
 			}
 
-			Scoreboard scoreboard = new Scoreboard("sidebar", stringArray[0], "dummy", SortOrder.ASCENDING);
+			Scoreboard scoreboard = new Scoreboard("sidebar", stringArray[0], "dummy", SortOrder.ASCENDING);;
 
 			List<String> sliceList = Arrays.stream(stringArray)
 					.skip(1)
@@ -70,6 +74,13 @@ class Hud extends Thread {
 
 			scoreboard.setLines(sliceList);
 			scoreboard.addViewer(player, DisplaySlot.SIDEBAR);
+
+			for (Map.Entry<IScorer, IScoreboardLine> entry : scoreboard.getLines().entrySet()) {
+				IScoreboardLine line = entry.getValue();
+
+				scoreboard.updateScore(line);
+				scoreboard.resend();
+			}
 		}
 	}
 }
