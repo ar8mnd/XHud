@@ -12,4 +12,4 @@
 # <FNAME> Faction name
 # <MONEY> Money amount from EconomyAPI
 
-Message: "XHud 3.0<N>Created by PetteriM1<N>You can edit hud in config.yml"
+Message: "§d§o§lA§bR§6K§aI§f COIN*§eНик§f:§d <NAME>*§l§o§aБаланс§f: <MONEY>§a $ *§bОнлайн§7:§f <PLAYERS>*§eПинг§7:§f <PING>"

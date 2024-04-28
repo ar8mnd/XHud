@@ -1,18 +1,15 @@
 package xhud;
 
 import cn.nukkit.Player;
-import cn.nukkit.network.protocol.SetDisplayObjectivePacket;
-import cn.nukkit.network.protocol.SetScorePacket;
 import cn.nukkit.plugin.PluginBase;
-import cn.nukkit.scoreboard.IScoreboardLine;
 import cn.nukkit.scoreboard.Scoreboard;
-import cn.nukkit.scoreboard.ScoreboardLine;
 import cn.nukkit.scoreboard.data.DisplaySlot;
 import cn.nukkit.scoreboard.data.SortOrder;
-import cn.nukkit.scoreboard.displayer.IScoreboardViewer;
-import cn.nukkit.scoreboard.scorer.FakeScorer;
 import cn.nukkit.utils.Config;
 import me.onebone.economyapi.EconomyAPI;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main extends PluginBase {
 	public static Config config;
@@ -25,17 +22,19 @@ public class Main extends PluginBase {
 }
 
 class Hud extends Thread {
-	private Main plugin;
+	private final Main plugin;
 
 	public Hud(Main plugin) {
 		this.plugin = plugin;
 	}
 
+	private List<String> lst = new ArrayList<>();
+
 	@Override
 	public void run() {
 		for (Player player : plugin.getServer().getOnlinePlayers().values()) {
 			String money;
-			String hud = Main.config.getString("Message")
+			String text = Main.config.getString("Message")
 					.replaceAll("<NAME>", player.getName())
 					.replaceAll("<WORLD>", player.getLevel().getName())
 					.replaceAll("<X>", Integer.toString((int) player.x))
@@ -46,7 +45,6 @@ class Hud extends Thread {
 					.replaceAll("<MAXPLAYERS>", Integer.toString(plugin.getServer().getMaxPlayers()))
 					.replaceAll("<PING>", Integer.toString(player.getPing()))
 					.replaceAll("<TPS>", Float.toString(plugin.getServer().getTicksPerSecond()));
-
 			try {
 				Class.forName("me.onebone.economyapi.EconomyAPI");
 				money = Double.toString(EconomyAPI.getInstance().myMoney(player));
@@ -54,27 +52,24 @@ class Hud extends Thread {
 				money = "null";
 			}
 
-			hud = hud.replaceAll("<MONEY>", money);
+			StringTokenizer tokenizer = new StringTokenizer(text, "*");
 
-			Scoreboard scoreboard = new Scoreboard("objectiveName", "SideBar", "dummy", SortOrder.ASCENDING);
+			int tokenCount = tokenizer.countTokens();
+			String[] stringArray = new String[tokenCount];
 
+			for (int i = 0; i < tokenCount; i++) {
+				stringArray[i] = tokenizer.nextToken();
+			}
+
+			Scoreboard scoreboard = new Scoreboard("sidebar", stringArray[0], "dummy", SortOrder.ASCENDING);
+
+			List<String> sliceList = Arrays.stream(stringArray)
+					.skip(1)
+					.limit(stringArray.length)
+					.collect(Collectors.toList());
+
+			scoreboard.setLines(sliceList);
 			scoreboard.addViewer(player, DisplaySlot.SIDEBAR);
-
-			FakeScorer scorer = new FakeScorer("Player1");
-			IScoreboardLine line = new ScoreboardLine(scoreboard, scorer, plugin.getServer().getOnlinePlayers().size());
-			scoreboard.addLine(line);
-
-			line.setScore(plugin.getServer().getOnlinePlayers().size());
-			scoreboard.updateScore(line);
-
-			SetDisplayObjectivePacket objectivePacket = new SetDisplayObjectivePacket();
-			objectivePacket.displaySlot = DisplaySlot.SIDEBAR;
-			objectivePacket.objectiveName = "objectiveName";
-			objectivePacket.displayName = "ABOBA";
-			objectivePacket.criteriaName = "dummy";
-			objectivePacket.sortOrder = SortOrder.ASCENDING;
-
-			player.dataPacket(objectivePacket);
 		}
 	}
 }
